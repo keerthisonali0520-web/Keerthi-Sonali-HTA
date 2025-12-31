@@ -1,0 +1,7 @@
+{
+  "name": "AI powered health tracking app",
+  "description": "An industry-grade wellness platform powered by Multi-Agent AI for personalized physical and mental health monitoring and autonomous coaching.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
