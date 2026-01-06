@@ -10,7 +10,7 @@ interface Props {
 const Chatbot: React.FC<Props> = ({ onClose }) => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<{ role: 'user' | 'bot', text: string }[]>([
-    { role: 'bot', text: 'Hello! I am Zenith. How can I assist with your wellness journey today?' }
+    { role: 'bot', text: 'Hello! I am your FitCare assistant. How can I assist with your wellness journey today?' }
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -41,11 +41,11 @@ const Chatbot: React.FC<Props> = ({ onClose }) => {
       <div className="bg-white w-full max-w-lg h-[600px] rounded-[3rem] shadow-2xl flex flex-col overflow-hidden border border-slate-50 animate-in zoom-in-95 duration-500">
         <header className="p-8 border-b border-slate-50 flex items-center justify-between bg-[#fafbfc]">
           <div className="flex items-center space-x-3">
-            <div className="p-2.5 bg-indigo-50 text-indigo-500 rounded-2xl">
+            <div className="p-2.5 bg-sky-50 text-sky-500 rounded-2xl">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-black text-slate-800 tracking-tight">Zenith AI</h3>
+              <h3 className="font-black text-slate-800 tracking-tight">FitCare AI</h3>
               <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Always Active</p>
             </div>
           </div>
@@ -56,10 +56,10 @@ const Chatbot: React.FC<Props> = ({ onClose }) => {
           {messages.map((m, i) => (
             <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[80%] flex items-start space-x-3 ${m.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                <div className={`p-2.5 rounded-xl ${m.role === 'user' ? 'bg-indigo-50 text-indigo-500' : 'bg-slate-50 text-slate-400'}`}>
+                <div className={`p-2.5 rounded-xl ${m.role === 'user' ? 'bg-sky-50 text-sky-500' : 'bg-slate-50 text-slate-400'}`}>
                   {m.role === 'user' ? <User className="w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
                 </div>
-                <div className={`p-5 rounded-[1.75rem] text-sm font-medium leading-relaxed ${m.role === 'user' ? 'bg-indigo-500 text-white rounded-tr-none' : 'bg-slate-50 text-slate-700 rounded-tl-none'}`}>
+                <div className={`p-5 rounded-[1.75rem] text-sm font-medium leading-relaxed ${m.role === 'user' ? 'bg-sky-500 text-white rounded-tr-none' : 'bg-slate-50 text-slate-700 rounded-tl-none'}`}>
                   {m.text}
                 </div>
               </div>
@@ -68,7 +68,7 @@ const Chatbot: React.FC<Props> = ({ onClose }) => {
           {isTyping && (
             <div className="flex justify-start">
                <div className="bg-slate-50 p-4 rounded-full flex items-center space-x-2">
-                 <Loader2 className="w-4 h-4 text-indigo-300 animate-spin" />
+                 <Loader2 className="w-4 h-4 text-sky-300 animate-spin" />
                  <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Thinking</span>
                </div>
             </div>
@@ -83,11 +83,11 @@ const Chatbot: React.FC<Props> = ({ onClose }) => {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
               placeholder="Ask anything about your wellness..."
-              className="w-full bg-white border border-slate-100 rounded-[1.5rem] p-5 pr-16 outline-none focus:border-indigo-100 transition-pastel text-sm font-medium shadow-sm"
+              className="w-full bg-white border border-slate-100 rounded-[1.5rem] p-5 pr-16 outline-none focus:border-sky-100 transition-pastel text-sm font-medium shadow-sm"
             />
             <button 
               onClick={handleSend}
-              className="absolute right-3 top-3 p-2.5 bg-indigo-500 text-white rounded-2xl hover:bg-indigo-600 transition-pastel shadow-lg shadow-indigo-100"
+              className="absolute right-3 top-3 p-2.5 bg-sky-500 text-white rounded-2xl hover:bg-sky-600 transition-pastel shadow-lg shadow-sky-100"
             >
               <Send className="w-5 h-5" />
             </button>

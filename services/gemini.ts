@@ -64,6 +64,28 @@ export const analyzeHealthReport = async (base64Image?: string, mimeType?: strin
   return JSON.parse(response.text || '{}');
 };
 
+export const explainAgentLogic = async (agentName: string, decision: string, recommendation: string) => {
+  const prompt = `
+    As an AI Systems Engineer, explain the internal logic behind this ${agentName} agent decision.
+    Decision: "${decision}"
+    Recommendation: "${recommendation}"
+    
+    Explain the "Chain of Thought":
+    1. What data markers were likely triggered?
+    2. How does this align with physiological or psychological best practices?
+    3. Why was this specific priority level assigned?
+    
+    Keep the explanation technical but accessible. Limit to 3 short paragraphs.
+  `;
+
+  const response = await ai.models.generateContent({
+    model: 'gemini-3-flash-preview',
+    contents: prompt
+  });
+
+  return response.text || "Logic explanation unavailable at this time.";
+};
+
 export const regenerateMeal = async (mealType: string, currentPlan: any, deficiencies: string[]) => {
   const prompt = `The user has these deficiencies: ${deficiencies.join(', ')}. 
   The current ${mealType} suggestion is "${currentPlan[mealType.toLowerCase()]}".
@@ -108,7 +130,7 @@ export const getChatbotResponse = async (history: { role: string, text: string }
   const response = await ai.models.generateContent({
     model: 'gemini-3-flash-preview',
     contents: [
-      { text: "You are Zenith, a friendly wellness chatbot. Provide helpful, non-clinical health and mental health advice." },
+      { text: "You are FitCare assistant, a friendly wellness chatbot. Provide helpful, non-clinical health and mental health advice." },
       ...history.map(h => ({ text: `${h.role}: ${h.text}` })),
       { text: `User: ${message}` }
     ]

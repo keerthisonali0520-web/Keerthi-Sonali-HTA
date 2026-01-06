@@ -19,11 +19,15 @@ export interface HealthLog {
 }
 
 export interface UserProfile {
+  id: string; // Unique identifier for isolating data
   name: string;
   age: number;
   weight: number;
   height: number;
   fitnessGoal: string;
+  logs: HealthLog[];
+  decisions: AgentDecision[];
+  tasks: WellnessTask[];
 }
 
 export interface Reminder {
@@ -81,11 +85,11 @@ export interface AgentDecision {
 export interface AppState {
   user: UserProfile;
   isLoggedIn: boolean;
-  logs: HealthLog[];
-  decisions: AgentDecision[];
-  tasks: WellnessTask[];
   library: GeneratedContent[];
   reminders: Reminder[];
   physicalAnalysis?: ReportAnalysis;
   mentalAnalysis?: MentalStateAnalysis;
+  logs: HealthLog[];
+  tasks: WellnessTask[];
+  decisions: AgentDecision[];
 }

@@ -3,6 +3,7 @@ import { AppState, AgentDecision, WellnessTask } from '../types';
 import { generateAgentAdvice } from './gemini';
 
 export const runAgentCycle = async (state: AppState): Promise<{ decisions: AgentDecision[], tasks: WellnessTask[] }> => {
+  // Access properties from the updated AppState interface
   const { user, logs } = state;
   const recentLogs = logs.slice(0, 3);
   
@@ -23,11 +24,12 @@ export const runAgentCycle = async (state: AppState): Promise<{ decisions: Agent
         timestamp: new Date()
       };
       
-      const tasks: WellnessTask[] = (aiOutput.tasks || []).map((t: string) => ({
+      // Explicitly type the map return and cast status to 'pending' as a constant to avoid type widening to string
+      const tasks: WellnessTask[] = (aiOutput.tasks || []).map((t: string): WellnessTask => ({
         id: Math.random().toString(36).substr(2, 9),
         title: t,
-        category: type === 'Mental Health' ? 'Mental' : (type as any),
-        status: 'pending',
+        category: type === 'Mental Health' ? 'Mental' : (type === 'Fitness' ? 'Fitness' : 'Nutrition'),
+        status: 'pending' as 'pending',
         assignedBy: type
       }));
 

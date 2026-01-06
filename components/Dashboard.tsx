@@ -2,18 +2,20 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { AppState, WellnessTask } from '../types';
-import { Droplets, Footprints, Moon, Heart, Activity, CheckCircle2, Circle, Clock, MessageSquare, Star, Smartphone, RefreshCw } from 'lucide-react';
+import { Droplets, Footprints, Moon, Heart, Activity, CheckCircle2, Circle, Clock, MessageSquare, Star, Smartphone, RefreshCw, Scan, Brain, PlusCircle, ArrowRight, ShieldCheck } from 'lucide-react';
 
 interface Props {
   state: AppState;
   onToggleTask: (id: string) => void;
   onUpdateLogs: (newLogs: any[]) => void;
+  onNavigate: (tab: any) => void;
 }
 
-const Dashboard: React.FC<Props> = ({ state, onToggleTask, onUpdateLogs }) => {
+const Dashboard: React.FC<Props> = ({ state, onToggleTask, onUpdateLogs, onNavigate }) => {
   const [showFeedback, setShowFeedback] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
 
+  // Use state.logs from the corrected AppState interface
   const chartData = [...state.logs].reverse().map(log => ({
     date: new Date(log.timestamp).toLocaleDateString('en-US', { weekday: 'short' }),
     steps: log.steps,
@@ -27,16 +29,15 @@ const Dashboard: React.FC<Props> = ({ state, onToggleTask, onUpdateLogs }) => {
   // Automatic Data Acquisition simulation from "Phone"
   useEffect(() => {
     const autoSync = () => {
-      // Only auto-sync if we don't have a fresh log for today yet
+      // Sync logic to mimic "Extraction from Mobile"
       const lastLogDate = state.logs[0]?.timestamp ? new Date(state.logs[0].timestamp).toDateString() : null;
       const today = new Date().toDateString();
       
-      if (lastLogDate !== today) {
+      if (lastLogDate !== today || state.logs[0]?.mealDescription === 'Late night work session') {
         acquireDeviceData();
       }
     };
     
-    // Initial sync after a short delay for UX
     const timer = setTimeout(autoSync, 2000);
     return () => clearTimeout(timer);
   }, []);
@@ -55,35 +56,61 @@ const Dashboard: React.FC<Props> = ({ state, onToggleTask, onUpdateLogs }) => {
         waterIntake: 1800,
         sleepHours: simulatedSleep,
         mood: state.logs[0]?.mood || 'Happy',
-        mealDescription: 'Auto-sync from device'
+        mealDescription: 'Extracted from Mobile Health Core'
       };
       
       onUpdateLogs([newLog, ...state.logs]);
       setIsSyncing(false);
-    }, 2000);
+    }, 2500);
   };
 
   return (
     <div className="space-y-12 animate-in fade-in duration-700">
       <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Daily Pulse</h1>
-          <p className="text-slate-400 font-medium mt-1">Hello {state.user.name.split(' ')[0]}, your wellness agents are synchronized.</p>
+          <h1 className="text-3xl font-bold text-slate-800 tracking-tight">FitCare Dashboard</h1>
+          {/* Access user from state directly as defined in the updated AppState */}
+          <p className="text-slate-400 font-medium mt-1">Hello {state.user.name.split(' ')[0]}, your mobile health data is synchronized.</p>
         </div>
         <div className="flex items-center space-x-3">
-          <div className={`flex items-center space-x-2 text-xs font-bold uppercase tracking-widest px-5 py-3 rounded-2xl shadow-sm border transition-pastel ${isSyncing ? 'bg-indigo-50 border-indigo-100 text-indigo-500 animate-pulse' : 'bg-white border-slate-100 text-slate-400'}`}>
-            {isSyncing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Smartphone className="w-4 h-4 text-indigo-400" />}
-            <span>{isSyncing ? "Acquiring Device Data..." : "Device Synced"}</span>
+          <div className={`flex items-center space-x-2 text-xs font-bold uppercase tracking-widest px-5 py-3 rounded-2xl shadow-sm border transition-pastel ${isSyncing ? 'bg-sky-50 border-sky-100 text-sky-500 animate-pulse' : 'bg-white border-slate-100 text-slate-400'}`}>
+            {isSyncing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4 text-emerald-400" />}
+            <span>{isSyncing ? "Extracting Mobile Data..." : "Device Encrypted & Synced"}</span>
           </div>
           <button 
             onClick={() => setShowFeedback(true)}
-            className="flex items-center space-x-2 text-indigo-500 text-xs font-bold uppercase tracking-widest bg-indigo-50 px-5 py-3 rounded-2xl shadow-sm border border-indigo-100 hover:bg-indigo-100 transition-pastel"
+            className="flex items-center space-x-2 text-sky-500 text-xs font-bold uppercase tracking-widest bg-sky-50 px-5 py-3 rounded-2xl shadow-sm border border-sky-100 hover:bg-sky-100 transition-pastel"
           >
             <MessageSquare className="w-4 h-4" />
-            <span>Weekly Feedback</span>
+            <span>AI Tuning</span>
           </button>
         </div>
       </header>
+
+      {/* Quick Navigation Buttons */}
+      <section className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <NavActionCard 
+          icon={<Scan className="w-6 h-6" />}
+          label="Analyze Report"
+          desc="Scan medical data"
+          color="sky"
+          onClick={() => onNavigate('physical')}
+        />
+        <NavActionCard 
+          icon={<Brain className="w-6 h-6" />}
+          label="Mental Check"
+          desc="Take pulse check"
+          color="rose"
+          onClick={() => onNavigate('mental')}
+        />
+        <NavActionCard 
+          icon={<PlusCircle className="w-6 h-6" />}
+          label="New Entry"
+          desc="Log manual activity"
+          color="emerald"
+          onClick={() => onNavigate('logs')}
+        />
+      </section>
 
       {showFeedback && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/10 backdrop-blur-md animate-in fade-in duration-300">
@@ -92,24 +119,24 @@ const Dashboard: React.FC<Props> = ({ state, onToggleTask, onUpdateLogs }) => {
               <div className="w-16 h-16 bg-amber-50 text-amber-500 rounded-3xl flex items-center justify-center mx-auto mb-4">
                 <Star className="w-8 h-8" />
               </div>
-              <h2 className="text-2xl font-black text-slate-800">Personalization Tuning</h2>
-              <p className="text-slate-400 font-medium">Was your device sync and diet plan accurate today?</p>
+              <h2 className="text-2xl font-black text-slate-800">Agent Personalization</h2>
+              <p className="text-slate-400 font-medium">Was today's "Mobile Extraction" for steps ({latest.steps}) accurate?</p>
             </div>
             <div className="grid grid-cols-5 gap-4">
-               {[1,2,3,4,5].map(n => <button key={n} className="aspect-square bg-slate-50 rounded-2xl text-xl hover:bg-indigo-50 hover:text-indigo-500 transition-pastel">⭐</button>)}
+               {[1,2,3,4,5].map(n => <button key={n} className="aspect-square bg-slate-50 rounded-2xl text-xl hover:bg-sky-50 hover:text-sky-500 transition-pastel">⭐</button>)}
             </div>
-            <textarea className="w-full bg-slate-50 border-transparent rounded-2xl p-4 text-sm outline-none focus:bg-white focus:border-indigo-100 transition-pastel min-h-[100px]" placeholder="Tell us how we can improve..."></textarea>
-            <button onClick={() => setShowFeedback(false)} className="w-full p-5 bg-indigo-500 text-white font-bold rounded-2xl shadow-xl shadow-indigo-100 hover:bg-indigo-600 transition-pastel">Submit Feedback</button>
+            <textarea className="w-full bg-slate-50 border-transparent rounded-2xl p-4 text-sm outline-none focus:bg-white focus:border-sky-100 transition-pastel min-h-[100px]" placeholder="How can the AI serve you better?"></textarea>
+            <button onClick={() => setShowFeedback(false)} className="w-full p-5 bg-sky-500 text-white font-bold rounded-2xl shadow-xl shadow-sky-100 hover:bg-sky-600 transition-pastel">Confirm Tuning</button>
           </div>
         </div>
       )}
 
-      {/* Quick Stats - Pastel Theme */}
+      {/* Quick Stats - Mobile Source Labeled */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard icon={<Footprints/>} color="sky" label="Device Steps" value={latest.steps.toLocaleString()} unit="steps" />
+        <StatCard icon={<Footprints/>} color="sky" label="Mobile Steps" value={latest.steps.toLocaleString()} unit="extracted" />
         <StatCard icon={<Droplets/>} color="teal" label="Hydration" value={`${latest.waterIntake}`} unit="ml" />
-        <StatCard icon={<Moon/>} color="indigo" label="Device Sleep" value={`${latest.sleepHours}`} unit="hours" />
-        <StatCard icon={<Heart/>} color="rose" label="Vibe Check" value={latest.mood} unit="current" />
+        <StatCard icon={<Moon/>} color="indigo" label="Mobile Sleep" value={`${latest.sleepHours}`} unit="extracted" />
+        <StatCard icon={<Heart/>} color="rose" label="Mood State" value={latest.mood} unit="current" />
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
@@ -120,6 +147,7 @@ const Dashboard: React.FC<Props> = ({ state, onToggleTask, onUpdateLogs }) => {
               <CheckCircle2 className="w-5 h-5 mr-3 text-emerald-400" />
               Agentic Objectives
             </h3>
+            {/* Access tasks from state directly */}
             <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">{pendingTasks.length} Pending</span>
           </div>
           
@@ -129,7 +157,7 @@ const Dashboard: React.FC<Props> = ({ state, onToggleTask, onUpdateLogs }) => {
                 <div className="w-12 h-12 bg-slate-50 rounded-2xl mx-auto mb-4 flex items-center justify-center">
                    <Activity className="w-6 h-6 text-slate-200" />
                 </div>
-                <p className="text-slate-400 text-sm italic font-medium">Synchronizing with device for planning...</p>
+                <p className="text-slate-400 text-sm italic font-medium">Agents are analyzing extracted mobile data...</p>
               </div>
             ) : (
               state.tasks.map(task => (
@@ -139,7 +167,7 @@ const Dashboard: React.FC<Props> = ({ state, onToggleTask, onUpdateLogs }) => {
                   className={`w-full flex items-center p-4.5 rounded-2xl transition-pastel text-left border ${
                     task.status === 'completed' 
                     ? 'bg-emerald-50/50 border-emerald-100 text-emerald-600 opacity-60' 
-                    : 'bg-[#fafbfc] border-slate-100 text-slate-700 hover:border-indigo-100 hover:bg-white hover:shadow-sm'
+                    : 'bg-[#fafbfc] border-slate-100 text-slate-700 hover:border-sky-100 hover:bg-white hover:shadow-sm'
                   }`}
                 >
                   <div className={`mr-4 ${task.status === 'completed' ? 'text-emerald-500' : 'text-slate-300'}`}>
@@ -162,14 +190,14 @@ const Dashboard: React.FC<Props> = ({ state, onToggleTask, onUpdateLogs }) => {
         {/* Charts Container */}
         <div className="xl:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-8">
           <ChartCard 
-             title="Movement Analytics" 
+             title="Mobile Activity (Steps)" 
              icon={<Activity className="w-4 h-4 text-sky-400" />}
              data={chartData} 
              dataKey="steps" 
              stroke="#7dd3fc" 
           />
           <ChartCard 
-             title="Rest & Vitality" 
+             title="Extracted Sleep Cycles" 
              icon={<Moon className="w-4 h-4 text-indigo-400" />}
              data={chartData} 
              dataKey="sleep" 
@@ -181,6 +209,31 @@ const Dashboard: React.FC<Props> = ({ state, onToggleTask, onUpdateLogs }) => {
         </div>
       </div>
     </div>
+  );
+};
+
+const NavActionCard = ({ icon, label, desc, color, onClick }: any) => {
+  const colors: any = {
+    sky: 'bg-sky-50 text-sky-500 border-sky-100 hover:bg-sky-100',
+    rose: 'bg-rose-50 text-rose-500 border-rose-100 hover:bg-rose-100',
+    emerald: 'bg-emerald-50 text-emerald-500 border-emerald-100 hover:bg-emerald-100'
+  };
+  return (
+    <button 
+      onClick={onClick}
+      className={`p-6 rounded-[2.5rem] border flex items-center justify-between transition-pastel group ${colors[color]}`}
+    >
+      <div className="flex items-center space-x-4">
+        <div className="p-3 bg-white rounded-2xl shadow-sm group-hover:scale-110 transition-transform">
+          {icon}
+        </div>
+        <div className="text-left">
+          <p className="font-bold text-slate-800 tracking-tight">{label}</p>
+          <p className="text-[10px] font-black uppercase tracking-widest opacity-60">{desc}</p>
+        </div>
+      </div>
+      <ArrowRight className="w-5 h-5 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-pastel" />
+    </button>
   );
 };
 
